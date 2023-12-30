@@ -106,7 +106,7 @@ def intersect_Scene(ray, obj):
     elif obj["type"]=="plan":
         return intersect_Plane(ray, obj)
 
-def Is_in_Shadow(obj_min,P,N):
+def Is_in_Shadow(obj_min, P, N):
     # TODO: Description de la fonction
     liste = []
     lpl = normalize(Light["position"] - P)
@@ -171,10 +171,10 @@ def eclairage(obj, light, P):
     #ct = np.array(liste)
     return ct
 
-def reflected_ray(dirRay,N):
-    return dirRay - 2 * np.dot(dirRay,N)*N
+def reflected_ray(dirRay, N):
+    return dirRay - 2 * np.dot(dirRay, N) * N
 
-def compute_reflection(rayTest,depth_max,col):
+def compute_reflection(rayTest, depth_max, col):
     # TODO: Write simple desctiption of this function
     for i in range(1, depth_max):
         obji, Pi, Ni, col_rayi = trace_ray(rayTest)
@@ -228,7 +228,7 @@ acne_eps = 1e-4
 materialShininess = 50
 
 img = np.zeros((h, w, 3)) # image vide : que du noir
-#Aspect ratio
+# Aspect ratio
 r = float(w) / h
 # coordonnées de l'écran : x0, y0, x1, y1.
 S = (-1., -1. / r , 1., 1. / r )
@@ -253,8 +253,8 @@ depth_max = 10
 # Scene Description
 scene = [create_sphere([.75, -.3, -1.], # Position
                          .6, # Rayon
-                         np.array([1. , 0.6, 0. ]), # couleur ambiant
-                         np.array([1. , 0.6, 0. ]), # couleur diffuse
+                         np.array([1.0, 0.6, 0.0]), # couleur ambiant
+                         np.array([1.0, 0.6, 0.0]), # couleur diffuse
                          np.array([1.0, 1.0, 1.0]), # specular
                          0.2, # reflection index
                          1), # index
@@ -262,7 +262,7 @@ scene = [create_sphere([.75, -.3, -1.], # Position
                          [0, 1, 0], # Normal
                          np.array([0.145, 0.584, 0.854]), # couleur ambiant
                          np.array([0.145, 0.584, 0.854]), # couleur diffuse
-                         np.array([1.0, 1.0, 1.0]), # specular
+                         np.array([1.0,   1.0,   1.0]),   # specular
                          0.7, # reflection index
                          2), # index
          # If you wanna add new shapes tp scene you add them here
@@ -281,19 +281,23 @@ if __name__ == "__main__":
         if i % 10 == 0:
             print(F"{i / float(w) * 100}")
         for j, y in enumerate(np.linspace(S[1], S[3], h)):
-            direction_rayon = normalize(np.array([x ,y ,0]) - C)
+            direction_rayon = normalize(np.array([x, y, 0]) - C)
             raytest = create_Ray(C, direction_rayon)
             obj, P, N, col_ray  = trace_ray(raytest)
             #col_ray = compute_reflection(raytest, depth_max, col_ray)
-            # Recupere la coleur du point dintersection et le rajouer a celle de P
-            # Associer la coleur du point dintersection au pixel xorrespondant a l'image img
+            # Try statement executes a code, if an error (named exception)
+            # happens it calls code out and go to `except:` code clock
             try:
-                img[h - j - 1, i, :] = np.clip(col_ray, 0, 1) # la fonction clip permet de "forcer" col a être dans [0,1]
+                # Recupere la coleur du point dintersection et le rajouer a celle de P
+                # Associer la coleur du point dintersection au pixel correspondant a l'image img
+                img[h - j - 1, i, :] = np.clip(col_ray, 0, 1) # la fonction clip permet de "forcer" la couleur a être dans [0, 1]
+            # Usually this exception is raised when col_ray is None
             except TypeError:
-                # dans le cas ou col_ray est None c'es ignore
+                # Ignores
                 pass
+            # Unkown error
             except Exception as e:
-                print(F"Erorr => {e.__class__.__name__} ==> {e}")       
+                print(F"Unknown Erorr => {e.__class__.__name__} ==> {e}")       
 
     plt.imsave('figRaytracing.png', img)
     #plt.imshow(img)
